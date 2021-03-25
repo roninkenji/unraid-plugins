@@ -1,0 +1,74 @@
+<?xml version='1.0' standalone='yes'?>
+<!DOCTYPE PLUGIN [
+<!ENTITY name      "tmux-plugin">
+<!ENTITY author    "Kenji">
+<!ENTITY version   "2021.02.13">
+<!ENTITY md5       "">
+<!ENTITY launch    "tmux">
+<!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
+<!ENTITY confdir   "/boot/config/plugins/&name;">
+<!-- <!ENTITY github    "roninkenji/tmux-plugin">
+<!ENTITY pluginURL "https://raw.githubusercontent.com/&github;/master/&name;.plg"> -->
+<!ENTITY tmuxVersion "3.0a-x86_64-1">
+<!ENTITY tmuxURL "https://mirrors.slackware.com/slackware/slackware64-current/slackware64/ap/tmux-&tmuxVersion;.txz">
+<!ENTITY tmuxMD5 "7dabee590ed5b5e47b17480dec367636">
+<!ENTITY ncursesVersion "6.1_20191130-x86_64-1">
+<!ENTITY ncursesURL "https://mirrors.slackware.com/slackware/slackware64-current/slackware64/l/ncurses-&ncursesVersion;.txz">
+<!ENTITY ncursesMD5 "690bff9714ad19428733883e689ba0b6">
+]>
+
+<PLUGIN name="&name;" author="&author;" version="&version;" ><!-- pluginURL="&pluginURL;"> -->
+
+  <CHANGES>
+###2019.12.14###
+Initial version
+  </CHANGES>
+
+  <FILE Name="&confdir;/packages/tmux-&tmuxVersion;.txz">
+    <URL>&tmuxURL;</URL>
+    <MD5>&tmuxMD5;</MD5>
+  </FILE>
+
+  <FILE Name="&confdir;/packages/ncurses-&ncursesVersion;.txz">
+    <URL>&ncursesURL;</URL>
+    <MD5>&ncursesMD5;</MD5>
+  </FILE>
+
+  <FILE Name="&plugdir;/README.md">
+    <INLINE>
+####tmux####
+This plugin installs [tmux]
+    </INLINE>
+  </FILE>
+
+  <FILE Run="/bin/bash" Method="install">
+    <INLINE>
+upgradepkg --install-new &confdir;/packages/tmux-&tmuxVersion;.txz
+tar --wildcards -C / -xvf &confdir;/packages/ncurses-&ncursesVersion;.txz usr/share/terminfo/s/screen* usr/share/terminfo/t/tmux*
+[ -f &confdir;/tmux.conf ] &amp;&amp; cat &confdir;/tmux.conf | tee -a /etc/tmux.conf
+mkdir -p &plugdir;/event
+echo IyEvYmluL2Jhc2gKU0VTU0lPTj1FbWJ5CgppZiB0bXV4IGhhcy1zZXNzaW9uIC10ICIke1NFU1NJT059IjsgdGhlbgogIHRtdXgga2lsbC1zZXNzaW9uIC10ICIke1NFU1NJT059IgpmaQo= | base64 -d | tee &plugdir;/event/unmounting_disks
+echo IyEvYmluL2Jhc2gKU0VTU0lPTj1FbWJ5CkxPRz0vbW50L3VzZXIvYXBwZGF0YS9FbWJ5U2VydmVyL2xvZ3MvZW1ieXNlcnZlci50eHQKCmlmIHRtdXggaGFzLXNlc3Npb24gLXQgIiR7U0VTU0lPTn0iOyB0aGVuCiAgZWNobyBhdHRhY2hpbmcKICB0bXV4IGF0dGFjaCAtdCAiJHtTRVNTSU9OfSIKZWxzZQogIGVjaG8gbmV3LXNlc3Npb24KICB0bXV4IG5ldy1zZXNzaW9uIC1kIC1zICIke1NFU1NJT059IiAtbiBMT0cgbGVzcyAtLWZvbGxvdy1uYW1lICtGICR7TE9HfSBcOyBcCiAgICBuZXctd2luZG93IC10MSAtZGMgL21udC91c2VyL0Rvd25sb2FkcyAtbiBEb3dubG9hZHMgXDsgXAogICAgbmV3LXdpbmRvdyAtdDIgLWRjIC9tbnQvdXNlci9NZWRpYS9Tb3J0aW5nIC1uIE0vU29ydGluZyBcOyBcCiAgICBuZXctd2luZG93IC10MyAtZGMgL21udC91c2VyL01lZGlhL0FuaW1lIC1uIE0vQW5pbWUKICB0bXV4IGF0dGFjaCAtdCAiJHtTRVNTSU9OfSIgXDsgc2VsZWN0LXdpbmRvdyAtdDEKZmkKCg== | base64 -d | tee /usr/local/bin/mgmt_tmux.sh
+chmod +x /usr/local/bin/mgmt_tmux.sh &plugdir;/event/*
+echo ""
+echo "----------------------------------------------------"
+echo " &name; has been installed."
+echo " Copyright 2019, &author;"
+echo " Version: &version;"
+echo "----------------------------------------------------"
+echo ""
+    </INLINE>
+  </FILE>
+
+  <!--
+      The 'remove' script.
+  -->
+  <FILE Run="/bin/sh" Method="remove">
+    <INLINE>
+removepkg tmux
+rm -vf &confdir;/packages/*.txz
+rm -vf /usr/share/terminfo/*/{screen,tmux}*
+rm -vrf &plugdir;
+    </INLINE>
+  </FILE>
+</PLUGIN>

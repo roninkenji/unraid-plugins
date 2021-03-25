@@ -1,0 +1,70 @@
+<?xml version='1.0' standalone='yes'?>
+<!DOCTYPE PLUGIN [
+<!ENTITY name      "rclone-plugin">
+<!ENTITY author    "Kenji">
+<!ENTITY version   "2020.11.21">
+<!ENTITY md5       "">
+<!ENTITY launch    "">
+<!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
+<!ENTITY confdir   "/boot/config/plugins/&name;">
+<!ENTITY github    "roninkenji/&name;">
+<!ENTITY pluginURL "https://raw.githubusercontent.com/&github;/master/&name;.plg">
+<!ENTITY rcloneVersion "v1.53.3">
+<!ENTITY rcloneURL "https://downloads.rclone.org/&rcloneVersion;/rclone-&rcloneVersion;-linux-amd64.zip">
+<!ENTITY rcloneMD5 "fc210fb4bc95ee00c18573f4a5a06246">
+]>
+
+<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;">
+  <CHANGES>
+###2020.11.21###
+- Version bump to 1.53.3
+
+###2020.08.02###
+- Version bump to 1.52.2
+
+###2020.01.20###
+- Version bump to 1.50.2
+
+###2019.07.01###
+- Version bump to 1.48.0
+
+###2018.10.29a###
+- Version bump to 1.44
+
+###2018.10.12###
+- Initial commit
+  </CHANGES>
+
+  <FILE Name="&confdir;/rclone-&rcloneVersion;-linux-amd64.zip">
+    <URL>&rcloneURL;</URL>
+    <MD5>&rcloneMD5;</MD5>
+  </FILE>
+
+  <FILE Name="/usr/local/bin/rclone">
+    <INLINE>
+#!/bin/bash
+export XDG_CONFIG_HOME=/boot/config/plugins
+/usr/local/bin/rclone.bin "$@"
+    </INLINE>
+  </FILE>
+
+  <FILE Run="/bin/bash" Method="install">
+    <INLINE>
+    unzip &confdir;/rclone-&rcloneVersion;-linux-amd64.zip -d /usr/local/
+    install -m 755 /usr/local/rclone-&rcloneVersion;-linux-amd64/rclone /usr/local/bin/rclone.bin
+    chmod 755 /usr/local/bin/rclone
+    rm -rf /usr/local/rclone-&rcloneVersion;-linux-amd64
+    </INLINE>
+  </FILE>
+
+  <!--
+      The 'remove' script.
+  -->
+  <FILE Run="/bin/sh" Method="remove">
+    <INLINE>
+    rm -f /usr/local/bin/rclone
+    rm -f /usr/local/bin/rclone.bin
+    rm -f &confdir;/rclone-&rcloneVersion;-linux-amd64.zip
+    </INLINE>
+  </FILE>
+</PLUGIN>
